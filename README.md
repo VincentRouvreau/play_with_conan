@@ -5,14 +5,27 @@
 rm -rf build
 
 conan install . --output-folder=build --build=missing --options=boost/1.82.0:shared=True
+# This command builds boost*.dll in C:\Users\User\.conan2\p\cmake1927748c2604b\p\bin
+# This requires to append PATH environment variable with C:\Users\User\.conan2\p\cmake1927748c2604b\p\bin
+# Not set by conanbuild.bat
+# Nor in conan_toolchain
 cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=./build/Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+make
+ctest
 ```
+
+# Issue
+
+On Windows, Boost unit_test_framework shared library path (dll) is not added to the PATH.
+`ctest` fails.
+
+## Some comments
 
 Here, I don't know why `conan_toolchain.cmake` is not directly in build directory, and I don't know how to change it.
 
 ```txt
--- Using Conan toolchain: /home/gailuron/workspace/gudhi/play_with_conan/build/build/Release/generators/conan_toolchain.cmake
+-- Using Conan toolchain: /home/play_with_conan/build/build/Release/generators/conan_toolchain.cmake
 -- Conan toolchain: C++ Standard 17 with extensions ON
 -- The CXX compiler identification is GNU 11.4.0
 -- Detecting CXX compiler ABI info
@@ -78,5 +91,12 @@ Boost::unit_test_framework is found
 Boost::program_options is found
 -- Configuring done (0.1s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/gailuron/workspace/gudhi/play_with_conan/build
+-- Build files have been written to: /home/play_with_conan/build
 ```
+
+
+## Some Tricks
+
+### Dependencies
+
+conan graph info -f html . > info.html
