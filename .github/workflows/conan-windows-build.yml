@@ -5,15 +5,12 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: windows-latest
-    strategy:
-      max-parallel: 4
     name: Windows conan build
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: 3.7
-          architecture: x64
       - uses: seanmiddleditch/gha-setup-ninja@master
       - name: Install dependencies
         run: |
@@ -24,6 +21,6 @@ jobs:
       - name: Build python wheel and install it
         run: |
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_TOOLCHAIN_FILE="D:\a\play_with_conan\play_with_conan\build\generators\conan_toolchain.cmake" -DCMAKE_POLICY_DEFAULT_CMP0091=NEW ..
+          cmake -DCMAKE_BUILD_TYPE=Release -G Ninja -DCMAKE_TOOLCHAIN_FILE="D:\a\play_with_conan\play_with_conan\build\generators\conan_toolchain.cmake" -DCMAKE_POLICY_DEFAULT_CMP0091=NEW ..
           ninja
           ninja test
