@@ -1,0 +1,30 @@
+jobs:
+  
+  - job: 'Windows'
+    displayName: "Build and test Windows"
+    timeoutInMinutes: 0
+    cancelTimeoutInMinutes: 60
+    pool:
+      vmImage: windows-latest
+    variables:
+      cmakeConanFlags: -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
+
+    steps:
+    - script: |
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" amd64
+        IF %errorlevel% NEQ 0 exit /b %errorlevel%
+        conan profile detect
+        IF %errorlevel% NEQ 0 exit /b %errorlevel%
+        conan install . --build=missing --options=boost/1.82.0:shared=True
+        IF %errorlevel% NEQ 0 exit /b %errorlevel%
+        cd build
+        dir
+        type conan_toolchain.cmake
+        call "conanbuild.bat"
+        IF %errorlevel% NEQ 0 exit /b %errorlevel%
+        cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" $(cmakeConanFlags) ..
+        IF %errorlevel% NEQ 0 exit /b %errorlevel%
+        cmake --build . --config Release
+        IF %errorlevel% NEQ 0 exit /b %errorlevel%
+        ctest --output-on-failure -C Release -E diff_files
+      displayName: 'Build and test'
