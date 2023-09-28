@@ -18,13 +18,12 @@ jobs:
           conan profile detect
           conan install . --build=missing --options=boost/1.82.0:shared=True
       # cmake <path> -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE=D:\a\play_with_conan\play_with_conan\build\generators\conan_toolchain.cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW
-      - name: Build python wheel and install it
+      - name: Build and test
         run: |
           cd build
-          .\generators\conanbuild.bat
-          cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE=".\generators\conan_toolchain.cmake" -DCMAKE_POLICY_DEFAULT_CMP0091=NEW ..
-          .\generators\deactivate_conanbuild.bat
+          D:\a\play_with_conan\play_with_conan\build\generators\conanbuild.bat
+          cmake -DCMAKE_BUILD_TYPE=Release -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="D:\a\play_with_conan\play_with_conan\build\generators\conan_toolchain.cmake" -DCMAKE_POLICY_DEFAULT_CMP0091=NEW ..
+          D:\a\play_with_conan\play_with_conan\build\generators\deactivate_conanbuild.bat
           cmake --build . --config Release
-          .\generators\conanrun.bat
+          D:\a\play_with_conan\play_with_conan\build\generators\conanrun.bat
           ctest --output-on-failure -C Release
-          .\generators\deactivate_conanrun.bat
